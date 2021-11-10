@@ -13,10 +13,21 @@ app.get('/', (req,res) => {
      req.connection.remoteAddress ||
     req.socket.remoteAddress ||
     req.connection.socket.remoteAddress;
-    res.send('Hello world');
+    res.send('<a href="http://localhost:3000/direction" class="button">Info direction</a>');
+    console.log(ip)
+
+})
+
+app.get('/direction', (req,res) => {
+    let ip = req.headers['x-forwarded-for'] ||
+     req.connection.remoteAddress ||
+    req.socket.remoteAddress ||
+    req.connection.socket.remoteAddress;
     console.log(ip) 
     let geo = geoip.lookup(ip);
     console.log(geo);
+    res.send(`<a href="http://localhost:3000/" class="button">Back</a><br><br> \
+    Info:${geo}`);
 })
 
 app.listen(port, () => console.log(`Server at http://localhost:${port}`));
