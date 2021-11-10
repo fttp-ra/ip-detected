@@ -27,7 +27,11 @@ app.get('/direction', (req,res) => {
     let geo = geoip.lookup(ip);
     console.log(geo);
     res.send(`<a href="/" class="button">Back</a><br><br> \
-    Info:${geo}`);
+    Ip:${ip} \
+    Country:${geo.country}); \
+    Region:${geo.region}); \
+    Timezone:${geo.timezone}); \
+    Info:${geo.city}`); 
 })
 
 app.listen(port, () => console.log(`Server at http://localhost:${port}`));
