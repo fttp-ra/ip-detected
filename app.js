@@ -34,11 +34,13 @@ app.get('/direction', (req,res) => {
     <br>Region:${geo.region} \
     <br>Timezone:${geo.timezone} \
     <br>City:${geo.city}`);
-    if(!fs.exists(fileJson)){
-        fs.writeFileSync('ip-search.json', JSON.stringify(geo))
-    }else{
-        console.log('The file exist.')
-    }
+    try {
+        if (fs.existsSync(fileJson)) {
+            console.log('File json has been created!');
+          }
+        } catch(err) {
+        console.error(err)
+        }
 })
 
 app.listen(port, () => console.log(`Server at http://localhost:${port}`));
