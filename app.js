@@ -2,13 +2,15 @@ const express = require('express');
 const app =  express();
 const morgan = require('morgan');
 const geoip = require('geoip-lite');
+let fs = require('fs')
+let fileJson = './ip-serch.json'
 const port = process.env.PORT || 3000
 
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 
-app.get('/', (req,res) => {
+app.get('*', (req,res) => {
     let ip = req.headers['x-forwarded-for'] ||
      req.connection.remoteAddress ||
     req.socket.remoteAddress ||
@@ -31,7 +33,12 @@ app.get('/direction', (req,res) => {
     <br>Country:${geo.country} \
     <br>Region:${geo.region} \
     <br>Timezone:${geo.timezone} \
-    <br>City:${geo.city}`); 
+    <br>City:${geo.city}`);
+    if(!fs.exists(fileJson)){
+        fs.writeFileSync('ip-search.json', JSON.stringify(geo))
+    }else{
+        console.log('The file exist.')
+    }
 })
 
 app.listen(port, () => console.log(`Server at http://localhost:${port}`));
