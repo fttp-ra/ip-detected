@@ -10,7 +10,7 @@ app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
 
-app.get('/*', (req,res) => {
+app.get('/', (req,res) => {
     let ip = req.headers['x-forwarded-for'] ||
      req.connection.remoteAddress ||
     req.socket.remoteAddress ||
