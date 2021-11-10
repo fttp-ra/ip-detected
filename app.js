@@ -13,7 +13,7 @@ app.get('/', (req,res) => {
      req.connection.remoteAddress ||
     req.socket.remoteAddress ||
     req.connection.socket.remoteAddress;
-    res.send('<a href="http://localhost:3000/direction" class="button">Info direction</a>');
+    res.send('<a href="/direction" class="button">Info direction</a>');
     console.log(ip)
 
 })
@@ -26,7 +26,7 @@ app.get('/direction', (req,res) => {
     console.log(ip) 
     let geo = geoip.lookup(ip);
     console.log(geo);
-    res.send(`<a href="http://localhost:3000/" class="button">Back</a><br><br> \
+    res.send(`<a href="/" class="button">Back</a><br><br> \
     Info:${geo}`);
 })
 
