@@ -28,9 +28,9 @@ app.get('/direction', (req,res) => {
     console.log(geo);
     res.send(`<a href="/" class="button">Back</a><br><br> \
     <br>Ip:${ip} \
-    <br>Country:${geo.country}); \
-    <br>Region:${geo.region}); \
-    <br>Timezone:${geo.timezone}); \
+    <br>Country:${geo.country} \
+    <br>Region:${geo.region} \
+    <br>Timezone:${geo.timezone} \
     <br>City:${geo.city}`); 
 })
 
