@@ -1,6 +1,7 @@
 const express = require('express');
 const app =  express();
 const morgan = require('morgan');
+const geoip = require('geoip-lite');
 const port = process.env.PORT || 3000
 
 app.use(morgan('dev'));
@@ -15,7 +16,9 @@ app.get('/', (req,res) => {
     res.send('Hello world');
     console.log(ip) */
     let ip = req.ip
-    console.log(ip);
+    let geo = geoip.lookup(ip);
+    console.log(geo);
+    res.send('Hello!');
 })
 
 app.listen(port, () => console.log(`Server at http://localhost:${port}`));
