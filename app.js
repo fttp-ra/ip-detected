@@ -4,20 +4,15 @@ const morgan = require('morgan');
 const geoip = require('geoip-lite');
 let fs = require('fs');
 const port = process.env.PORT || 3000
-const redis = require('redis');
+const redis = require('redis');/* 
 const portRedis = process.env.PORT || 6379
-/* let redisHost = "redis-19884.c91.us-east-1-3.ec2.cloud.redislabs.com:19884"
+let redisHost = "redis-19884.c91.us-east-1-3.ec2.cloud.redislabs.com:19884"
 let clientRedis = redis.createClient(portRedis, redisHost) */
-const config = require('./config.json');
-let accountSid = config.TWILIO_ACCOUNT_SID;
-let authToken = config.TWILIO_AUTH_TOKEN;
 const moment = require('moment');
-const clientTwilio = require('twilio')(accountSid, authToken);
 
 app.use(morgan('dev'));
 app.use(express.json());
 app.use(express.urlencoded({extended:false}));
-
 
 
 /* clientRedis.on('connect', function(err){
@@ -25,6 +20,35 @@ app.use(express.urlencoded({extended:false}));
 
     return console.log('Connected Redist');
 }) */
+
+let blackList = ['']
+
+let callBlackList = () => {
+    try {
+        if(fs.existsSync('log.txt')){
+            let data = fs.readFileSync('log.txt', 'utf-8')
+            //console.log('The file log exist.',data);
+            let arrayData = data.split('\nip->');
+            for(let x = 1; x <= arrayData.length; x++){
+                if(arrayData[x] === undefined){
+                    continue
+                }else{
+                    let ip = arrayData[x]
+                    //console.log(ip);
+                    blackList+=ip
+                    blackList+='\n'
+                }
+            }
+            console.log(blackList);
+        }else{
+            console.log('The file blacklist for block IP, is not activate');
+        }
+    } catch (err) {
+        console.log(err.message);
+    }
+}
+
+setTimeout(callBlackList, 1000)
 
 app.get('/', (req,res) => {
     let ip = req.headers['x-forwarded-for'] ||
@@ -45,6 +69,7 @@ app.get('/direction', (req,res) => {
     //console.log(ip) 
     let geo = geoip.lookup(ip);
     let date = moment().format('LLL')
+    console.log(geo);
     //console.log(geo);
     try {
         if(fs.existsSync('log.txt')){
@@ -57,6 +82,7 @@ app.get('/direction', (req,res) => {
         }else{
             let logger = fs.createWriteStream('log.txt')
             console.log('File created');
+            console.log(`${date}`);
             logger.write(`\nip->${ip}`); //date:date});
         }
 
@@ -64,5 +90,6 @@ app.get('/direction', (req,res) => {
         console.log(err.message);
     }
 })
+
 
 app.listen(port, () => console.log(`Server at http://localhost:${port}`));
