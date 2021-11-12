@@ -66,7 +66,7 @@ app.get('/direction', (req,res) => {
      req.connection.remoteAddress ||
     req.socket.remoteAddress ||
     req.connection.socket.remoteAddress;
-    //console.log(ip) 
+    console.log(ip) 
     let geo = geoip.lookup(ip);
     let date = moment().format('LLL')
     console.log(geo);
@@ -90,6 +90,5 @@ app.get('/direction', (req,res) => {
         console.log(err.message);
     }
 })
-
 
 app.listen(port, () => console.log(`Server at http://localhost:${port}`));
