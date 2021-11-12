@@ -3,6 +3,7 @@ const app =  express();
 const morgan = require('morgan');
 const geoip = require('geoip-lite');
 let fs = require('fs');
+const ipfilter = require('express-ipfilter').IpFilter;
 const port = process.env.PORT || 3000
 const redis = require('redis');/* 
 const portRedis = process.env.PORT || 6379
@@ -36,10 +37,11 @@ let callBlackList = () => {
                     let ip = arrayData[x]
                     //console.log(ip);
                     blackList+=ip
-                    blackList+='\n'
+                    blackList+=' '
                 }
             }
             console.log(blackList);
+            app.use(ipfilter(blackList, {mode: 'deny'}))
         }else{
             console.log('The file blacklist for block IP, is not activate');
         }
