@@ -22,26 +22,28 @@ app.use(express.urlencoded({extended:false}));
     return console.log('Connected Redist');
 }) */
 
-let blackList = ['']
+let blackList = []
 
 let callBlackList = () => {
+    //let regExpIp = /^(\d{3}.\d{3}.\d{3}.\d{2}|\d{3}.\d{3}.\d{3}.\d{3}|\d{3}.\d{2}.\d{3}.\d{3})/g
     try {
-        if(fs.existsSync('log.txt')){
-            let data = fs.readFileSync('log.txt', 'utf-8')
+        if(fs.existsSync('log.json')){
+            let data = fs.readFileSync('log.json', 'utf-8')
             //console.log('The file log exist.',data);
-            let arrayData = data.split('\nip->');
-            for(let x = 1; x <= arrayData.length; x++){
-                if(arrayData[x] === undefined){
+            let arrayData = data.split(',');
+
+             for(let x = arrayData.length - 1; x >= 0; x--){
+                if(arrayData[x] === ''){
                     continue
                 }else{
                     let ip = arrayData[x]
                     //console.log(ip);
-                    blackList+=ip
-                    blackList+=' '
+                    blackList.push(ip)
                 }
+                app.use(ipfilter(blackList, {mode: 'deny'}))
             }
-            console.log(blackList);
-            app.use(ipfilter(blackList, {mode: 'deny'}))
+            //console.log(blackList);
+            
         }else{
             console.log('The file blacklist for block IP, is not activate');
         }
@@ -50,7 +52,7 @@ let callBlackList = () => {
     }
 }
 
-setTimeout(callBlackList, 1000)
+callBlackList();
 
 app.get('/', (req,res) => {
     let ip = req.headers['x-forwarded-for'] ||
@@ -58,39 +60,41 @@ app.get('/', (req,res) => {
     req.socket.remoteAddress ||
     req.connection.socket.remoteAddress;
     res.send('<a href="/direction" class="button">Info direction</a>');
-    console.log(ip)
+    //console.log(ip)
 
 })
 
 app.get('/direction', (req,res) => {
-    res.send('Received parameters');
+    callBlackList()
     let ip = req.headers['x-forwarded-for'] ||
      req.connection.remoteAddress ||
     req.socket.remoteAddress ||
     req.connection.socket.remoteAddress;
-    console.log(ip) 
-    let geo = geoip.lookup(ip);
+    console.log(ip)
     let date = moment().format('LLL')
-    console.log(geo);
     //console.log(geo);
     try {
         if(fs.existsSync('log.txt')){
             console.log('File exist');
-            fs.appendFile('log.txt',`\nip->${ip}`, (err) => {
+            fs.appendFile('log.json',`${ip},`, (err) => {
                 if(err) throw err.message;
-
                 console.log('The ip is register in the new file');
+                res.send(`Received parameters <p>${ip}</p><br>`);
+                console.log(blackList);
             }) 
         }else{
-            let logger = fs.createWriteStream('log.txt')
+            let logger = fs.createWriteStream('log.json')
             console.log('File created');
             console.log(`${date}`);
-            logger.write(`\nip->${ip}`); //date:date});
+            res.send(`Received parameters <p>${ip}</p><br>`);
+            logger.write(`${ip},`); //date:date});
+            console.log(blackList);
         }
-
     } catch (err) {
         console.log(err.message);
     }
 })
+
+
 
 app.listen(port, () => console.log(`Server at http://localhost:${port}`));
